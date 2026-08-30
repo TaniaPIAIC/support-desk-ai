@@ -9,7 +9,7 @@ import { addTicketMessage, createTicket, getTicketForUser, listTickets, updateTi
 
 const triageSchema = { type: "object", properties: { category: { type: "string" }, urgency: { type: "string", enum: ["low", "medium", "high", "urgent"] }, summary: { type: "string" }, route: { type: "string" }, confidence: { type: "integer" } }, required: ["category", "urgency", "summary", "route", "confidence"], additionalProperties: false } as const;
 
-async function runTriage(subject: string, description: string) {
+export async function runTriage(subject: string, description: string) {
   try {
     const response = await invokeLLM({ model: "gpt-5-mini", messages: [{ role: "system", content: "You triage customer support tickets. Return only structured JSON. Be concise, practical, and conservative with urgency." }, { role: "user", content: `Subject: ${subject}\nDescription: ${description}` }], response_format: { type: "json_schema", json_schema: { name: "ticket_triage", strict: true, schema: triageSchema } } });
     return JSON.parse(String(response.choices[0]?.message?.content ?? "{}"));
